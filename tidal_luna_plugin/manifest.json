@@ -1,0 +1,48 @@
+{
+  "name": "Incallide Terminal Player",
+  "version": "1.0.0",
+  "description": "Launch a beautiful terminal-based mini player for Tidal",
+  "author": "Incallide Team",
+  "homepage": "https://github.com/yourusername/incallide",
+  "icon": "icon.png",
+  "main": "plugin.js",
+  "permissions": [
+    "player",
+    "ui",
+    "notifications",
+    "websocket"
+  ],
+  "ui": {
+    "button": {
+      "text": "Terminal Player",
+      "icon": "🖥️",
+      "tooltip": "Open Incallide Terminal Player",
+      "position": "player-controls"
+    }
+  },
+  "settings": {
+    "serverPort": {
+      "type": "number",
+      "default": 9876,
+      "label": "WebSocket Server Port",
+      "description": "Port for communication with terminal player"
+    },
+    "autoLaunch": {
+      "type": "boolean",
+      "default": true,
+      "label": "Auto-launch Terminal",
+      "description": "Automatically launch terminal when clicking button"
+    },
+    "terminalCommand": {
+      "type": "string",
+      "default": "osascript -e 'tell application \"Terminal\" to do script \"cd ~/incallide && ./run_mini_player.sh\"'",
+      "label": "Terminal Launch Command",
+      "description": "Command to launch the terminal player"
+    }
+  },
+  "compatibility": {
+    "minVersion": "1.0.0",
+    "maxVersion": "*",
+    "platform": ["darwin"]
+  }
+}

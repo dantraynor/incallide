@@ -1,0 +1,58 @@
+{
+  "name": "incallide-terminal-player",
+  "version": "1.0.0",
+  "description": "Terminal-based mini player for Tidal Luna",
+  "main": "index.js",
+  "author": "Incallide Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/incallide"
+  },
+  "keywords": [
+    "tidal",
+    "luna",
+    "terminal",
+    "player",
+    "music"
+  ],
+  "tidalLunaPlugin": {
+    "displayName": "Incallide Terminal Player",
+    "icon": "assets/icon.png",
+    "category": "player",
+    "permissions": [
+      "player:read",
+      "player:control",
+      "ui:inject",
+      "system:execute"
+    ],
+    "settings": {
+      "serverPort": {
+        "type": "number",
+        "default": 9876,
+        "label": "WebSocket Port",
+        "description": "Port for terminal player communication"
+      },
+      "terminalApp": {
+        "type": "select",
+        "default": "Terminal",
+        "options": ["Terminal", "iTerm2", "Alacritty", "Kitty"],
+        "label": "Terminal Application",
+        "description": "Which terminal to use"
+      },
+      "autoConnect": {
+        "type": "boolean",
+        "default": true,
+        "label": "Auto-connect",
+        "description": "Automatically connect to terminal player"
+      }
+    }
+  },
+  "scripts": {
+    "install": "node scripts/install.js",
+    "uninstall": "node scripts/uninstall.js"
+  },
+  "dependencies": {
+    "ws": "^8.14.0"
+  }
+}

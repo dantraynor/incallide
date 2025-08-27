@@ -1,0 +1,11 @@
+{
+	"name": "@luna/incallide-terminal",
+	"description": "Launch a beautiful terminal-based mini player for Tidal",
+	"author": {
+		"name": "Incallide Team",
+		"url": "https://github.com/yourusername/incallide",
+		"avatarUrl": "https://avatars.githubusercontent.com/u/yourusername"
+	},
+	"main": "./src/index.ts",
+	"type": "module"
+}

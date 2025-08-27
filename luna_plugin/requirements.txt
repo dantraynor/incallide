@@ -1,0 +1,9 @@
+# Core dependencies
+pynput==1.7.6           # For capturing media keys
+pyobjc-core==10.1       # macOS framework bindings
+pyobjc-framework-Cocoa==10.1
+pyobjc-framework-Quartz==10.1
+rumps==0.4.0            # Menu bar app framework
+plyer==2.1              # Cross-platform notifications
+websockets==12.0        # WebSocket server for communication
+python-dotenv==1.0.0    # Environment configuration
