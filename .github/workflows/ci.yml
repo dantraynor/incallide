@@ -22,10 +22,10 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install VLC
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y vlc
+          sudo apt-get install -y vlc libjpeg-dev zlib1g-dev
 
       - name: Install Python dependencies
         run: |
