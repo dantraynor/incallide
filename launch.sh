@@ -1,21 +1,17 @@
 #!/bin/bash
 
-# Tidal Terminal Player Launch Script
-echo "🎵 Launching Tidal Terminal Player..."
+# incallide launch script
+echo "Launching incallide..."
 
-# Check if virtual environment exists
 if [ ! -d ".venv" ]; then
-    echo "❌ Virtual environment not found. Please run the setup first."
+    echo "Virtual environment not found. Run: python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
     exit 1
 fi
 
-# Check if VLC is installed
 if ! command -v vlc &> /dev/null; then
-    echo "❌ VLC is not installed. Installing VLC..."
-    sudo apt update && sudo apt install -y vlc-bin vlc-plugin-base libvlc-dev
+    echo "VLC not found. Install it (e.g. 'brew install vlc' on macOS or 'apt install vlc' on Debian/Ubuntu)."
+    exit 1
 fi
 
-# Activate virtual environment and run the player
-echo "🚀 Starting Tidal Terminal Player..."
 source .venv/bin/activate
-python main.py
+python tidal_tui.py
