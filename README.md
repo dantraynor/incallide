@@ -17,7 +17,7 @@ The Tidal desktop app is heavy and mouse-oriented. I wanted a client I could dri
 
 - HiFi / lossless streaming via `tidalapi`
 - In-terminal album art via `term-image`
-- Full keyboard navigation (vim-style `hjkl` + shortcuts)
+- Keyboard navigation (`j`/`k` + shortcuts)
 - Search → play flow without leaving the keyboard
 - OAuth session persistence (log in once)
 - VLC-backed audio with volume control
@@ -65,14 +65,12 @@ First launch opens a browser for Tidal OAuth; the session is cached at `~/.tidal
 
 | Key | Action |
 | --- | --- |
-| `ctrl+s` | Focus search |
-| `enter` | Play selected track |
+| `ctrl+s` | Focus search input |
+| `escape` | Jump from search to results |
+| `enter` | Submit search / play highlighted row |
+| `j` / `k` | Move down / up in results |
 | `space` | Play / pause |
-| `n` | Next track |
-| `p` | Previous track |
 | `=` / `-` | Volume up / down |
-| `j` / `k` | Move down / up |
-| `h` / `l` | Move left / right |
 | `ctrl+c` | Quit |
 
 ## Troubleshooting

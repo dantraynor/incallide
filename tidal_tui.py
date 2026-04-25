@@ -187,16 +187,12 @@ class TidalTUI(App):
     BINDINGS = [
         Binding("ctrl+c", "quit", "Quit"),
         Binding("ctrl+s", "focus_search", "Search"),
+        Binding("escape", "focus_results", "Results"),
         Binding("space", "play_pause", "Play/Pause"),
-        Binding("n", "next_track", "Next"),
-        Binding("p", "prev_track", "Previous"),
         Binding("=", "volume_up", "Vol+"),
         Binding("-", "volume_down", "Vol-"),
-        Binding("enter", "play_selected", "Play Selected"),
         Binding("j", "down", "Down"),
         Binding("k", "up", "Up"),
-        Binding("h", "left", "Left"),
-        Binding("l", "right", "Right"),
     ]
     
     def __init__(self):
@@ -242,7 +238,7 @@ class TidalTUI(App):
                 yield Label("🔍 Search & Results", id="search-title")
                 self.search_input = Input(placeholder="Search for tracks...", id="search-input")
                 yield self.search_input
-                self.search_table = DataTable(id="search-results")
+                self.search_table = DataTable(id="search-results", cursor_type="row")
                 self.search_table.add_columns("Track", "Artist", "Album", "Duration")
                 yield self.search_table
             
@@ -284,7 +280,7 @@ class TidalTUI(App):
         self.set_interval(1, self.update_progress)
         
         # Log welcome message
-        self.log_message("🎵 Tidal TUI Player Ready! Press Ctrl+S to search.")
+        self.log_message("🎵 Type to search • Enter to submit/play • j/k to navigate • Space to pause")
     
     async def authenticate(self) -> bool:
         """Authenticate with Tidal API"""
@@ -390,9 +386,17 @@ class TidalTUI(App):
                 )
             
             self.log_message(f"✓ Found {len(self.search_results)} tracks")
-            
+
+            if self.search_results:
+                self.search_table.focus()
+
         except Exception as e:
             self.log_message(f"❌ Search failed: {e}")
+
+    async def on_data_table_row_selected(self, event: DataTable.RowSelected):
+        """Play the highlighted track when Enter is pressed on the table."""
+        if event.data_table.id == "search-results":
+            await self.play_selected_track()
     
     def _format_duration(self, seconds: int) -> str:
         """Format duration in MM:SS format"""
@@ -482,6 +486,11 @@ class TidalTUI(App):
     def action_focus_search(self):
         """Focus the search input"""
         self.search_input.focus()
+
+    def action_focus_results(self):
+        """Move focus from the search input to the results table."""
+        if self.search_table.row_count > 0:
+            self.search_table.focus()
     
     def action_play_pause(self):
         """Toggle play/pause"""
@@ -510,10 +519,6 @@ class TidalTUI(App):
         self.volume = max(0, self.volume - 10)
         self.vlc_player.audio_set_volume(self.volume)
         self.log_message(f"🔉 Volume: {self.volume}%")
-    
-    async def action_play_selected(self):
-        """Play selected track"""
-        await self.play_selected_track()
     
     def action_down(self):
         """Move down in search results"""
