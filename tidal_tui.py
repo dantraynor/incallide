@@ -284,23 +284,31 @@ class TidalTUI(App):
     
     async def authenticate(self) -> bool:
         """Authenticate with Tidal API"""
+        loop = asyncio.get_event_loop()
         try:
             config = tidalapi.Config(quality=tidalapi.Quality.hi_res)
             self.session = tidalapi.Session(config)
-            
+
             # Try to load existing session
             if os.path.exists(self.session_file):
                 try:
                     with open(self.session_file, 'r') as f:
                         import json
                         session_data = json.load(f)
-                        if session_data.get('access_token'):
-                            self.session.load_oauth_session(session_data)
-                            if self.session.check_login():
-                                self.log_message("✓ Logged in using saved session")
-                                return True
-                except Exception:
-                    pass
+                    if session_data.get('access_token'):
+                        loaded = await loop.run_in_executor(
+                            None,
+                            lambda: self.session.load_oauth_session(
+                                session_data.get('token_type', 'Bearer'),
+                                session_data['access_token'],
+                                session_data.get('refresh_token'),
+                            ),
+                        )
+                        if loaded and await loop.run_in_executor(None, self.session.check_login):
+                            self.log_message("✓ Logged in using saved session")
+                            return True
+                except Exception as e:
+                    self.log_message(f"⚠️  Saved session unusable: {e}")
             
             # If no valid session exists, perform login
             self.log_message("🔐 Tidal Authentication Required")
@@ -339,6 +347,28 @@ class TidalTUI(App):
         """Log a message to the status log"""
         if self.status_log:
             self.status_log.write(message)
+
+    async def on_key(self, event) -> None:
+        """Route playback shortcuts to actions when the search input isn't focused.
+
+        Textual's Input widget swallows printable keys (including space), so the
+        App-level bindings never fire while the search input is focused. This
+        handler runs the corresponding actions when focus is on any other widget.
+        """
+        if self.focused is self.search_input:
+            return
+        action_map = {
+            "space": "play_pause",
+            "j": "down",
+            "k": "up",
+            "=": "volume_up",
+            "-": "volume_down",
+        }
+        action = action_map.get(event.key)
+        if action:
+            event.stop()
+            event.prevent_default()
+            await self.run_action(action)
     
     async def on_input_submitted(self, event: Input.Submitted):
         """Handle search input submission"""
@@ -492,8 +522,8 @@ class TidalTUI(App):
         if self.search_table.row_count > 0:
             self.search_table.focus()
     
-    def action_play_pause(self):
-        """Toggle play/pause"""
+    async def action_play_pause(self):
+        """Toggle play/pause, or start the cursored track if nothing is playing."""
         if self.is_playing:
             if self.is_paused:
                 self.vlc_player.play()
@@ -505,8 +535,10 @@ class TidalTUI(App):
                 self.is_paused = True
                 self.visualizer.stop_animation()
                 self.log_message("⏸️ Paused")
+        elif self.search_results:
+            await self.play_selected_track()
         else:
-            self.log_message("❌ No track to play")
+            self.log_message("❌ No track to play — search and select a row first")
     
     def action_volume_up(self):
         """Increase volume"""
